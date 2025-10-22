@@ -1,1 +1,1 @@
-@%~dp0\\GCG.exe aa bb cc
+@%~dp0\\GCG.exe
