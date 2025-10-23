@@ -5,9 +5,9 @@ TARGET := GCG
 DIST := Dist
 BUILD := Build
 SOURCE := Source
-INCLUDES := Include
+INCLUDE := Include
 
-CXXFLAGS += -std=c++23 -Wall -O2
+CXXFLAGS := -std=c++23 -Wall -O2
 
 #===============================================================================
 # ビルドルール読み込み
@@ -20,16 +20,6 @@ include Rules.mk
 .PHONY: all clean run
 
 all: $(OUTPUT)
-
-$(OUTPUT): $(OBJECTS)
-	@mkdir -p $(dir $@)
-	@echo "Linking..."
-	$(CXX) $^ -o $@
-
-$(OBJECTS): $(SOURCES)
-	@mkdir -p $(dir $@)
-	@echo "Compiling..."
-	$(CXX) -c $^ -o $@
 
 #===============================================================================
 # クリーン

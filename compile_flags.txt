@@ -2,6 +2,7 @@
 
 -Wall
 -std=c++23
+-IInclude
 -ID:/msys64/mingw64/include
 -ID:/msys64/mingw64/include/c++/15.2.0
 -ID:/msys64/mingw64/include/c++/15.2.0/x86_64-w64-mingw32

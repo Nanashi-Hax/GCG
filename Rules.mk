@@ -15,3 +15,16 @@ SOURCES := $(shell find $(SOURCE) -name '*.cpp')
 OBJECTS := $(patsubst $(SOURCE)/%.cpp, $(BUILD)/%.o, $(SOURCES))
 
 OUTPUT := $(DIST)/$(TARGET)
+
+#===============================================================================
+# ビルドルール
+#===============================================================================
+$(OUTPUT): $(OBJECTS)
+	@mkdir -p $(dir $@)
+	@echo "Linking..."
+	$(CXX) $^ -o $@
+
+$(BUILD)/%.o: $(SOURCE)/%.cpp
+	@mkdir -p $(dir $@)
+	@echo "Compiling..."
+	$(CXX) $(CXXFLAGS) -c $^ -o $@

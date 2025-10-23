@@ -1,33 +1,12 @@
-#include <array>  // array
-#include <cstdio>    // _popen
-#include <iostream>  // cout
-#include <memory>    // shared_ptr
 #include <filesystem>
+#include <string>
+#include <iostream>
 
-bool ExecuteCommand(char const *const command, int& exitCode)
+#include "Terminal/Process.hpp"
+
+void callback(std::string str)
 {
-    std::shared_ptr<FILE> pipe(
-        _popen(command, "r"),
-        [&](FILE* p)
-        {
-            exitCode = _pclose(p);
-        }
-    );
-
-    if (!pipe)
-    {
-        return false;
-    }
-
-    std::array<char, 256> buffer;
-    while (!feof(pipe.get()))
-    {
-        if (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
-        {
-            std::cout << buffer.data() << std::endl;
-        }
-    }
-    return true;
+    std::cout << str << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -42,17 +21,23 @@ int main(int argc, char** argv)
     std::filesystem::path object(exe.parent_path() / "Object" / "Test.o");
     std::filesystem::path binary(exe.parent_path() / "Binary" / "Test.bin");
 
-    std::string command;
+    std::string str;
     int exitCode;
 
-    command = as.string() + " -mregnames -mgekko " + source.string() + " -o " + object.string();
-    ExecuteCommand(command.c_str(), exitCode);
+    str = as.string() + " -mregnames -mgekko --no-warn " + source.string() + " -o " + object.string();
+    Terminal::Process assemble(str, callback);
+    exitCode = assemble.execute();
+    if(exitCode != 0) return exitCode;
 
-    command = nm.string() + " " + object.string();
-    ExecuteCommand(command.c_str(), exitCode);
+    str = nm.string() + " " + object.string();
+    Terminal::Process showSymbol(str, callback);
+    exitCode = showSymbol.execute();
+    if(exitCode != 0) return exitCode;
 
-    command = objcopy.string() + " -O binary " + object.string() + " " + binary.string();
-    ExecuteCommand(command.c_str(), exitCode);
+    str = objcopy.string() + " -O binary " + object.string() + " " + binary.string();
+    Terminal::Process toBin(str, callback);
+    exitCode = toBin.execute();
+    if(exitCode != 0) return exitCode;
 
-    return exitCode;
+    return 0;
 }
